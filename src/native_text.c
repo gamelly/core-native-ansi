@@ -21,7 +21,7 @@ static int native_text_print(lua_State *L)
 
 static int native_text_mensure(lua_State *L)
 {
-    uint8_t s = MIN(1, font_size - 1);
+    uint8_t s = font_size <= 2? 1: font_size;
     const char *text = luaL_checkstring(L, 1);
     lua_settop(L, 0);
     lua_pushnumber(L, strlen(text) * s);
@@ -32,7 +32,7 @@ static int native_text_mensure(lua_State *L)
 static int native_text_font_size(lua_State *L)
 {
     previous_font_size = font_size;
-    font_size = luaL_checknumber(L, 1);
+    font_size = ceil(luaL_checknumber(L, 1));
     font_size = MAX(1, font_size);
     lua_settop(L, 0);
     return 0;
