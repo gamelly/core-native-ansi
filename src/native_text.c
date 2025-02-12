@@ -21,10 +21,12 @@ static int native_text_print(lua_State *L)
 
 static int native_text_mensure(lua_State *L)
 {
-    uint8_t s = font_size <= 2? 1: font_size;
     const char *text = luaL_checkstring(L, 1);
+    uint8_t s = font_size <= 2? 1: font_size;
+    uint16_t len = strlen(text);
+    uint16_t width = len == 1 || s == 1? (s * len): (s+2) * len;
     lua_settop(L, 0);
-    lua_pushnumber(L, strlen(text) * s);
+    lua_pushnumber(L, width);
     lua_pushnumber(L, s);
     return 2;
 }
