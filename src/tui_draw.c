@@ -1,5 +1,19 @@
 #include "zeebo.h"
 
+static int current_mode;
+
+void tui_draw_mode(app_t *const self, int16_t drawmode, int16_t flushmode, int16_t change_mode, int16_t change_flush)
+{
+    if (change_mode) {
+        current_mode = drawmode;
+    }
+}
+
+void tui_draw_color(app_t *const self, int16_t r, int16_t g, int16_t b, int16_t a)
+{
+
+}
+
 void tui_draw_rect(app_t *const self, int16_t x, int16_t y, int16_t w, int16_t h)
 {
     x = MAX(1, x);
@@ -7,7 +21,7 @@ void tui_draw_rect(app_t *const self, int16_t x, int16_t y, int16_t w, int16_t h
     w = MAX(1, w);
     h = MAX(1, h);
 
-    if (false) {
+    if (current_mode) {
         int16_t x2 = x + w;
         int16_t y2 = y + h - 1;
 
@@ -34,6 +48,11 @@ void tui_draw_rect(app_t *const self, int16_t x, int16_t y, int16_t w, int16_t h
             self->out.len += w;
         }
     }
+}
+
+void tui_draw_line(app_t *const self, int16_t x1, int16_t y1, int16_t x2, int16_t y2)
+{
+
 }
 
 void tui_draw_text(app_t *const self, int16_t x, int16_t y, int16_t text_id, int16_t text_size)

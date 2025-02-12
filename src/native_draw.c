@@ -36,10 +36,8 @@ static int native_draw_rect(lua_State *L)
     int16_t w = (int16_t) luaL_checknumber(L, 4);
     int16_t h = (int16_t) luaL_checknumber(L, 5);
 
-    //if (geoclip_rect(&posx, &posy, &width, &height)) {
-        tui_queue_push(48, mode, 0, 1, 0);
-        tui_queue_push(50, x, y, w, h);
-//    }
+    tui_queue_push(48, mode, 0, 1, 0);
+    tui_queue_push(50, x, y, w, h);
 
     lua_settop(L, 0);
     return 0;
@@ -47,14 +45,12 @@ static int native_draw_rect(lua_State *L)
 
 static int native_draw_line(lua_State *L)
 {
-    int32_t x1 = luaL_checknumber(L, 1);
-    int32_t y1 = luaL_checknumber(L, 2);
-    int32_t x2 = luaL_checknumber(L, 3);
-    int32_t y2 = luaL_checknumber(L, 4);
+    int16_t x1 = luaL_checknumber(L, 1);
+    int16_t y1 = luaL_checknumber(L, 2);
+    int16_t x2 = luaL_checknumber(L, 3);
+    int16_t y2 = luaL_checknumber(L, 4);
 
-    // if (geoclip_line(&x1, &y1, &x2, &y2)) {
-    //     draw_queue_push(51, (uint8_t) x1, (uint8_t) y1, (uint8_t) x2, (uint8_t) y2);
-    // }
+    tui_queue_push(51, x1, y1, x2, y2);
 
     lua_settop(L, 0);
     return 0;
