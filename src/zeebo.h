@@ -1,8 +1,10 @@
+#include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include <inttypes.h>
+#include <ctype.h>
 
 #include <math.h>
 
@@ -70,7 +72,8 @@ void engine_init(app_t *const, int argc, char *argv[]);
 void engine_update(app_t *const);
 
 bool geoclip_rect(app_t *const, int16_t *const, int16_t *const, int16_t *const, int16_t *const);
-bool geoclip_text(app_t *const, int16_t *const, int16_t *const, int16_t *const);
+bool geoclip_text(app_t *const, int16_t *const, int16_t *const, int16_t *const, int16_t *const);
+bool geoclip_text2(app_t *const, int16_t *const, int16_t *const, int16_t *const, int16_t *const);
 
 bool tui_update(app_t *const);
 void tui_delete(app_t *const);

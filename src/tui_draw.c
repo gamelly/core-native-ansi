@@ -1,6 +1,26 @@
 #include "zeebo.h"
 
+#define GLY_TYPE_INT int16_t
+#define GLY_TYPE_SAFE
+#include "font/gly_type_render.h"
+
 static int current_mode;
+static char current_char = 'x';
+static app_t *other;
+
+static void draw_line(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
+    int dx = abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
+    int dy = -abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
+    int err = dx + dy, e2;
+
+    while (1) {
+        concat(other, out, "\x1b[%d;%dH%c", y1, x1, current_char);
+        if (x1 == x2 && y1 == y2) break;
+        e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x1 += sx; }
+        if (e2 <= dx) { err += dx; y1 += sy; }
+    }
+}
 
 void tui_draw_mode(app_t *const self, int16_t drawmode, int16_t flushmode, int16_t change_mode, int16_t change_flush)
 {
@@ -55,12 +75,35 @@ void tui_draw_line(app_t *const self, int16_t x1, int16_t y1, int16_t x2, int16_
 
 }
 
+/**
+ * @todo this core is bullshit!
+ */
 void tui_draw_text(app_t *const self, int16_t x, int16_t y, int16_t text_id, int16_t text_size)
 {
     const char* text = tui_queue_get_text(text_id);
+    int16_t text_len = strlen(text);
     int16_t pos = 0;
 
-    if (geoclip_text(self, &x, &y, &pos)) {
-        concat(self, out,  "\x1b[%d;%dH\x1B[%dm%s\x1B[0m", y, x, text_size == 2, &text[pos]);
+    if (text_size >= 3 && text_size <= 4) {
+        int16_t index = 0;
+        char* text_upper = malloc(text_len + 1);
+        while (index < text_len) {
+            text_upper[index] = toupper((unsigned char)text[index]);
+            index++;
+        }
+        text = text_upper;
+    }
+
+    if (text_size <= 2 && geoclip_text(self, &x, &y, &pos, &text_len)) {
+        concat(self, out, "\x1b[%d;%dH\x1B[%dm%.*s\x1B[0m", y, x, text_size == 2, text_len, &text[pos]);
+    }
+    if (text_size > 2 && geoclip_text2(self, &x, &y, &pos, &text_len)) {
+        other = self;
+        current_char = 'x';
+        gly_type_render(x, y, text_size, &text[pos], text_len, draw_line);
+    }
+
+    if (text_size >= 3 && text_size <= 4) {
+        free((void*)text);
     }
 }
