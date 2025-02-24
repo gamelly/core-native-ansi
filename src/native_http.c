@@ -132,5 +132,8 @@ void native_http_install(lua_State* L)
     lua_pushboolean(L, true);
     lua_setglobal(L, "native_http_has_ssl");
 
+    lua_pushboolean(L, true);
+    lua_setglobal(L, "native_http_has_callback");
+
     curl_global_init(CURL_GLOBAL_DEFAULT);
 }
