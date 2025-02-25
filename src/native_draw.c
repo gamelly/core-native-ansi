@@ -56,6 +56,27 @@ static int native_draw_line(lua_State *L)
     return 0;
 }
 
+static int native_draw_triangle(lua_State *L)
+{
+    uint8_t mode = luaL_checkinteger(L, 1);
+    int16_t x1 = luaL_checknumber(L, 2);
+    int16_t y1 = luaL_checknumber(L, 3);
+    int16_t x2 = luaL_checknumber(L, 4);
+    int16_t y2 = luaL_checknumber(L, 5);
+    int16_t x3 = luaL_checknumber(L, 6);
+    int16_t y3 = luaL_checknumber(L, 7);
+    int16_t x = (x1 + x2 + x3)/3;
+    int16_t y = (y1 + y2 + y3)/3;
+
+    int16_t text_index = tui_queue_push_text(".");
+    //tui_queue_push(52, x, y, text_index, 1);
+    tui_queue_push(52, x1, y1, text_index, 1);
+    tui_queue_push(52, x2, y2, text_index, 1);
+    tui_queue_push(52, x3, y3, text_index, 1);
+
+    lua_settop(L, 0);
+    return 0;
+}
 
 static int native_draw_image(lua_State *L) {
     uint8_t x = luaL_checknumber(L, 2);
@@ -91,7 +112,8 @@ void native_draw_install(lua_State* L)
         {"native_draw_color", native_draw_color},
         {"native_draw_rect", native_draw_rect},
         {"native_draw_line", native_draw_line},
-        {"native_draw_image", native_draw_image}
+        {"native_draw_image", native_draw_image},
+        {"native_draw_triangle", native_draw_triangle}
     };
 
     while(i < sizeof(lib)/sizeof(luaL_Reg)) {
