@@ -10,7 +10,7 @@ static void native_callback_http(lua_State* L, int req_id, const char *const evt
 {
     static int native_http_callback;
     if (!native_http_callback) {
-        lua_getglobal(L, "native_http_callback");
+        lua_getglobal(L, "native_callback_http");
         native_http_callback = luaL_ref(L, LUA_REGISTRYINDEX);
     }
     lua_rawgeti(L, LUA_REGISTRYINDEX, native_http_callback);
