@@ -65,14 +65,22 @@ static int native_draw_triangle(lua_State *L)
     int16_t y2 = luaL_checknumber(L, 5);
     int16_t x3 = luaL_checknumber(L, 6);
     int16_t y3 = luaL_checknumber(L, 7);
+    int16_t size = abs(x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2))/2;
     int16_t x = (x1 + x2 + x3)/3;
     int16_t y = (y1 + y2 + y3)/3;
 
-    int16_t text_index = tui_queue_push_text(".");
-    //tui_queue_push(52, x, y, text_index, 1);
-    tui_queue_push(52, x1, y1, text_index, 1);
-    tui_queue_push(52, x2, y2, text_index, 1);
-    tui_queue_push(52, x3, y3, text_index, 1);
+    if (size > 3) {
+        tui_queue_push(51, x1, y1, x2, y2);
+        tui_queue_push(51, x3, y3, x2, y2);
+        if (mode <= 1) {
+            tui_queue_push(51, x1, y1, x3, y3);
+        }
+    } else {
+        int16_t text_index = tui_queue_push_text(".");
+        tui_queue_push(52, x1, y1, text_index, 1);
+        tui_queue_push(52, x2, y2, text_index, 1);
+        tui_queue_push(52, x3, y3, text_index, 1);
+    }
 
     lua_settop(L, 0);
     return 0;
@@ -121,4 +129,9 @@ void native_draw_install(lua_State* L)
         lua_setglobal(L, lib[i].name);
         i = i + 1;
     }
+
+    lua_pushboolean(L, true);
+    lua_setglobal(L, "native_cfg_poly_repeat_0");
+    lua_pushboolean(L, true);
+    lua_setglobal(L, "native_cfg_poly_repeat_1");
 }

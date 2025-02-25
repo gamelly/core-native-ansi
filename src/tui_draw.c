@@ -41,6 +41,10 @@ void tui_draw_rect(app_t *const self, int16_t x, int16_t y, int16_t w, int16_t h
     w = MAX(1, w);
     h = MAX(1, h);
 
+    if (!geoclip_rect(self, &x, &y, &w, &y)) {
+        return;
+    }
+
     if (current_mode) {
         int16_t x2 = x + w;
         int16_t y2 = y + h - 1;
@@ -72,7 +76,21 @@ void tui_draw_rect(app_t *const self, int16_t x, int16_t y, int16_t w, int16_t h
 
 void tui_draw_line(app_t *const self, int16_t x1, int16_t y1, int16_t x2, int16_t y2)
 {
-
+    if (geoclip_line(self, &x1, &y1, &x2, &y2)) {
+        int dx = x2 - x1, dy = y2 - y1;
+        /*if (dx == 0) {
+            current_char = '|';
+        }
+        if (dy == 0) {
+            current_char = '-';
+        }
+        else {
+            current_char = (dx * dy > 0) ? '\\' : '/'; 
+        }*/
+        current_char = '+';
+        other = self;
+        draw_line(x1, y1, x2, y2);
+    }
 }
 
 /**

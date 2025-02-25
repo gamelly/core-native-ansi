@@ -71,6 +71,7 @@ typedef void (*cmd_t)(app_t *const, int16_t, int16_t, int16_t, int16_t);
 void engine_init(app_t *const, int argc, char *argv[]);
 void engine_update(app_t *const);
 
+bool geoclip_line(app_t *const, int16_t *const, int16_t *const, int16_t *const, int16_t *const);
 bool geoclip_rect(app_t *const, int16_t *const, int16_t *const, int16_t *const, int16_t *const);
 bool geoclip_text(app_t *const, int16_t *const, int16_t *const, int16_t *const, int16_t *const);
 bool geoclip_text2(app_t *const, int16_t *const, int16_t *const, int16_t *const, int16_t *const);
