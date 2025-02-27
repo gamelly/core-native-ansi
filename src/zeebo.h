@@ -42,6 +42,9 @@
 typedef struct {
     lua_State *L;
     struct {
+        int8_t debounce;
+    } cfg;
+    struct {
         bool tty;
     } started;
     struct {
@@ -96,7 +99,7 @@ void native_text_install(lua_State*);
 void native_draw_install(lua_State*);
 void native_http_install(lua_State*);
 void native_json_install(lua_State*);
-int native_keys_update(lua_State*, int);
+int native_keys_update(lua_State*, int, uint8_t);
 int native_draw_update(lua_State*, int);
 int native_draw_resize(lua_State*, int, int16_t, int16_t);
 int native_loop_update(lua_State*, int, uint8_t);

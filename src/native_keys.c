@@ -42,11 +42,15 @@ static const struct {
 };
 
 int
-native_keys_update(lua_State *L, int callback) {
+native_keys_update(lua_State *L, int callback, uint8_t debounce) {
     static bool old_pressed[KEY_COUNT];
     static bool pressed[KEY_COUNT];
+    static uint8_t old_count;
+    static uint8_t count;
+    static uint8_t skip;
     int c;
 
+    count = 0;
     while ((c = getchar()) != EOF) {
         uint8_t index = 0;
         if (c == 0x1b && (c = getchar()) == '[') {
@@ -54,6 +58,7 @@ native_keys_update(lua_State *L, int callback) {
             while (index < sizeof(esc_key_bindings) / sizeof(*esc_key_bindings)) {
                 if (esc_key_bindings[index].key == c) {
                     pressed[esc_key_bindings[index].id] = true;
+                    count++;
                 }
                 index++;
             }
@@ -61,24 +66,34 @@ native_keys_update(lua_State *L, int callback) {
             while (index < sizeof(key_bindings) / sizeof(*key_bindings)) {
                 if (key_bindings[index].key == c) {
                     pressed[key_bindings[index].id] = true;
+                    count++;
                 }
                 index++;
             }
         }
     }
 
-    uint8_t index = 0;
-    while (index < KEY_COUNT) {
-        if (pressed[index] ^ old_pressed[index]) {
-            lua_getglobal(L, "native_callback_keyboard");
-            lua_pushstring(L, key_names[index]);
-            lua_pushinteger(L, pressed[index]);
-            lua_pcall(L, 2, 0, 0);
+    if (count > 0 || skip >= debounce) {
+        uint8_t index = 0;
+        while (index < KEY_COUNT) {
+            if (pressed[index] ^ old_pressed[index]) {
+                lua_getglobal(L, "native_callback_keyboard");
+                lua_pushstring(L, key_names[index]);
+                lua_pushinteger(L, pressed[index]);
+                lua_pcall(L, 2, 0, 0);
+            }
+            index++;
         }
-        index++;
+        memcpy(old_pressed, pressed, KEY_COUNT);
+        memset(pressed, 0, KEY_COUNT);
+        old_count = count;
+        count = 0;
+        skip = 0;
     }
 
-    memcpy(old_pressed, pressed, KEY_COUNT);
-    memset(pressed, 0, KEY_COUNT);
+    if (count == 0 && old_count > 0) {
+        skip++;
+    }
+
     return LUA_OK;
 }

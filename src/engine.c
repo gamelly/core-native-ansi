@@ -57,8 +57,10 @@ void engine_init(app_t *const self, int argc, char *argv[])
     static script_t game;
     int opt;
 
-    while ((opt = getopt(argc, argv, "e:g:")) != -1) {
+    self->cfg.debounce = 2;
+    while ((opt = getopt(argc, argv, "d:e:g:")) != -1) {
         switch (opt) {
+            case 'd': self->cfg.debounce = atoi(optarg); break;
             case 'e': engine.file = optarg; break;
             case 'g': game.file = optarg; break;
         }
@@ -147,7 +149,7 @@ void engine_update(app_t *const self)
 {
     self->out.len = 0;
     concat(self, out, "\x1B[3J\x1B[H\x1B[2J");
-    if(native_keys_update(self->L, native_callback_keyboard) != LUA_OK) {
+    if(native_keys_update(self->L, native_callback_keyboard, self->cfg.debounce) != LUA_OK) {
         concat(self, err, "error: native_callback_keyboard\n%s\n", lua_tostring(self->L, -1));
     }
     if (self->ctx.width != self->old.width || self->ctx.height != self->old.height) {
